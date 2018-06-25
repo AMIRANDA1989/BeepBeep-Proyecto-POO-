@@ -1,0 +1,4 @@
+root
+
+jdbc:mysql://localhost/bd_beepbeep
+com.mysql.jdbc.Driver
