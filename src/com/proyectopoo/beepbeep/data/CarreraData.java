@@ -6,6 +6,8 @@
 package com.proyectopoo.beepbeep.data;
 
 import com.mysql.jdbc.PreparedStatement;
+import com.proyectopoo.beepbeep.classes.Carrera;
+import com.proyectopoo.beepbeep.classes.Parte;
 import com.proyectopoo.beepbeep.classes.Rol;
 import com.proyectopoo.beepbeep.engine.UserInteractions;
 import java.sql.ResultSet;
@@ -19,22 +21,25 @@ import java.util.logging.Logger;
  *
  * @author allan
  */
-public class RolData implements DataAccess<Rol> {
+public class CarreraData implements DataAccess<Carrera> {
 
-    private static final String SQL_INSERT = "INSERT INTO ROL(nombreRol) VALUES (?)";
-    private static final String SQL_UPDATE = "UPDATE ROL SET NOMBREROL = ? WHERE CODROL = ?";
-    private static final String SQL_DELETE = "DELETE FROM ROL WHERE CODROL = ?";
-    private static final String SQL_READ = "SELECT * FROM ROL WHERE CODROL = ?";
-    private static final String SQL_READALL = "SELECT * FROM ROL";
+    private static final String SQL_INSERT = "INSERT INTO CARRERA(codJugador1, tiempoJugador1, codJugador2, tiempojugador2) VALUES (?,?,?,?)";
+    private static final String SQL_UPDATE = "UPDATE CARRERA SET codJugador1 = ?, tiempoJugador1 = ?, codJugador2 = ?, tiempojugador = ? WHERE codCarrera = ?";
+    private static final String SQL_DELETE = "DELETE FROM CARRERA WHERE codcarrera = ?";
+    private static final String SQL_READ = "SELECT * FROM carrera WHERE codcarrera = ?";
+    private static final String SQL_READALL = "SELECT * FROM carrera";
     PreparedStatement ps;
     ConnectionBeep conn = ConnectionBeep.initConnection();
     UserInteractions ui;
     
     @Override
-    public boolean insert(Rol g) {
+    public boolean insert(Carrera g) {
         try {
             ps = (PreparedStatement) conn.getConnection().prepareStatement(SQL_INSERT);
-            ps.setString(1, g.getNombreRol());
+            ps.setInt(1, g.getCodJugador1());
+            ps.setInt(2, g.getTiempoJugador1());
+            ps.setInt(3, g.getCodJugador2());
+            ps.setInt(4, g.getTiempoJugador2());
             if (ps.executeUpdate() > 0) {
                 return true;
             }
@@ -67,11 +72,14 @@ public class RolData implements DataAccess<Rol> {
     }
 
     @Override
-    public boolean update(Rol c) {
+    public boolean update(Carrera c) {
         try {
             ps = (PreparedStatement) conn.getConnection().prepareStatement(SQL_UPDATE);
-            ps.setString(1, c.getNombreRol());
-            ps.setInt(2, c.getCodRol());
+            ps.setInt(1, c.getCodJugador1());
+            ps.setInt(2, c.getTiempoJugador1());
+            ps.setInt(3, c.getCodJugador2());
+            ps.setInt(4, c.getTiempoJugador2());
+            ps.setInt(5, c.getCodCarrera());
             if (ps.executeUpdate() > 0) {
                 return true;
             }
@@ -87,8 +95,8 @@ public class RolData implements DataAccess<Rol> {
     }
 
     @Override
-    public Rol read(Object key) {
-        Rol res = null;
+    public Carrera read(Object key) {
+        Carrera res = null;
         ResultSet rs;
         try{
             ps = (PreparedStatement) conn.getConnection().prepareStatement(SQL_READ);
@@ -97,7 +105,7 @@ public class RolData implements DataAccess<Rol> {
             rs = ps.executeQuery();
             
             while (rs.next()){
-                res = new Rol(rs.getInt(1), rs.getString(2));
+                res = new Carrera(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4), rs.getInt(5));
             }
             rs.close();
         } catch (SQLException ex) {
@@ -110,8 +118,8 @@ public class RolData implements DataAccess<Rol> {
     }
 
     @Override
-    public ArrayList<Rol> readAll() {
-        ArrayList<Rol> all = new ArrayList();
+    public ArrayList<Carrera> readAll() {
+        ArrayList<Carrera> all = new ArrayList();
         Statement s;
         ResultSet rs;
         try{
@@ -120,7 +128,7 @@ public class RolData implements DataAccess<Rol> {
             rs = ps.executeQuery(SQL_READALL);
             
             while (rs.next()){
-                all.add(new Rol(rs.getInt(1), rs.getString(2)));
+                all.add(new Carrera(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4), rs.getInt(5)));
             }
             rs.close();
         } catch (SQLException ex) {

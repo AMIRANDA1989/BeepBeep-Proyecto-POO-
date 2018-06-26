@@ -6,6 +6,7 @@
 package com.proyectopoo.beepbeep.data;
 
 import com.mysql.jdbc.PreparedStatement;
+import com.proyectopoo.beepbeep.classes.Parte;
 import com.proyectopoo.beepbeep.classes.Rol;
 import com.proyectopoo.beepbeep.engine.UserInteractions;
 import java.sql.ResultSet;
@@ -19,22 +20,25 @@ import java.util.logging.Logger;
  *
  * @author allan
  */
-public class RolData implements DataAccess<Rol> {
+public class ParteData implements DataAccess<Parte> {
 
-    private static final String SQL_INSERT = "INSERT INTO ROL(nombreRol) VALUES (?)";
-    private static final String SQL_UPDATE = "UPDATE ROL SET NOMBREROL = ? WHERE CODROL = ?";
-    private static final String SQL_DELETE = "DELETE FROM ROL WHERE CODROL = ?";
-    private static final String SQL_READ = "SELECT * FROM ROL WHERE CODROL = ?";
-    private static final String SQL_READALL = "SELECT * FROM ROL";
+    private static final String SQL_INSERT = "INSERT INTO PARTE(nombre, descripcion, precio, categoria) VALUES (?,?,?,?)";
+    private static final String SQL_UPDATE = "UPDATE PARTE SET nombre = ?, descripcion = ?, precio = ?, categoria = ? WHERE codParte = ?";
+    private static final String SQL_DELETE = "DELETE FROM PARTE WHERE codParte = ?";
+    private static final String SQL_READ = "SELECT * FROM PARTE WHERE codParte = ?";
+    private static final String SQL_READALL = "SELECT * FROM PARTE";
     PreparedStatement ps;
     ConnectionBeep conn = ConnectionBeep.initConnection();
     UserInteractions ui;
     
     @Override
-    public boolean insert(Rol g) {
+    public boolean insert(Parte g) {
         try {
             ps = (PreparedStatement) conn.getConnection().prepareStatement(SQL_INSERT);
-            ps.setString(1, g.getNombreRol());
+            ps.setString(1, g.getNombre());
+            ps.setString(2, g.getDescripcion());
+            ps.setInt(3, g.getPrecio());
+            ps.setInt(4, g.getCategoria());
             if (ps.executeUpdate() > 0) {
                 return true;
             }
@@ -67,11 +71,14 @@ public class RolData implements DataAccess<Rol> {
     }
 
     @Override
-    public boolean update(Rol c) {
+    public boolean update(Parte c) {
         try {
             ps = (PreparedStatement) conn.getConnection().prepareStatement(SQL_UPDATE);
-            ps.setString(1, c.getNombreRol());
-            ps.setInt(2, c.getCodRol());
+            ps.setString(1, c.getNombre());
+            ps.setString(2, c.getDescripcion());
+            ps.setInt(3, c.getPrecio());
+            ps.setInt(4, c.getCategoria());
+            ps.setInt(5, c.getCodParte());
             if (ps.executeUpdate() > 0) {
                 return true;
             }
@@ -87,8 +94,8 @@ public class RolData implements DataAccess<Rol> {
     }
 
     @Override
-    public Rol read(Object key) {
-        Rol res = null;
+    public Parte read(Object key) {
+        Parte res = null;
         ResultSet rs;
         try{
             ps = (PreparedStatement) conn.getConnection().prepareStatement(SQL_READ);
@@ -97,7 +104,7 @@ public class RolData implements DataAccess<Rol> {
             rs = ps.executeQuery();
             
             while (rs.next()){
-                res = new Rol(rs.getInt(1), rs.getString(2));
+                res = new Parte(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getInt(4), rs.getInt(5));
             }
             rs.close();
         } catch (SQLException ex) {
@@ -110,8 +117,8 @@ public class RolData implements DataAccess<Rol> {
     }
 
     @Override
-    public ArrayList<Rol> readAll() {
-        ArrayList<Rol> all = new ArrayList();
+    public ArrayList<Parte> readAll() {
+        ArrayList<Parte> all = new ArrayList();
         Statement s;
         ResultSet rs;
         try{
@@ -120,7 +127,7 @@ public class RolData implements DataAccess<Rol> {
             rs = ps.executeQuery(SQL_READALL);
             
             while (rs.next()){
-                all.add(new Rol(rs.getInt(1), rs.getString(2)));
+                all.add(new Parte(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getInt(4), rs.getInt(5)));
             }
             rs.close();
         } catch (SQLException ex) {

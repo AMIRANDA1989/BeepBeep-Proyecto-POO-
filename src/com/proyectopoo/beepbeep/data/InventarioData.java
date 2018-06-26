@@ -6,6 +6,7 @@
 package com.proyectopoo.beepbeep.data;
 
 import com.mysql.jdbc.PreparedStatement;
+import com.proyectopoo.beepbeep.classes.Inventario;
 import com.proyectopoo.beepbeep.classes.Rol;
 import com.proyectopoo.beepbeep.engine.UserInteractions;
 import java.sql.ResultSet;
@@ -19,22 +20,23 @@ import java.util.logging.Logger;
  *
  * @author allan
  */
-public class RolData implements DataAccess<Rol> {
+public class InventarioData implements DataAccess<Inventario> {
 
-    private static final String SQL_INSERT = "INSERT INTO ROL(nombreRol) VALUES (?)";
-    private static final String SQL_UPDATE = "UPDATE ROL SET NOMBREROL = ? WHERE CODROL = ?";
-    private static final String SQL_DELETE = "DELETE FROM ROL WHERE CODROL = ?";
-    private static final String SQL_READ = "SELECT * FROM ROL WHERE CODROL = ?";
-    private static final String SQL_READALL = "SELECT * FROM ROL";
+    private static final String SQL_INSERT = "INSERT INTO INVENTARIO (codusuario, codparte) VALUES (?, ?)";
+    private static final String SQL_UPDATE = "UPDATE INVENTARIO SET codusuario = ?, codparte = ? WHERE codUsuario = ? AND codParte = ?";
+    private static final String SQL_DELETE = "DELETE FROM INVENTARIO WHERE codUsuario = ? and codParte = ?";
+    private static final String SQL_READ = "SELECT * FROM INVENTARIO WHERE codUsuario = ? and codParte = ?";
+    private static final String SQL_READALL = "SELECT * FROM INVENTARIO";
     PreparedStatement ps;
     ConnectionBeep conn = ConnectionBeep.initConnection();
     UserInteractions ui;
     
     @Override
-    public boolean insert(Rol g) {
+    public boolean insert(Inventario g) {
         try {
             ps = (PreparedStatement) conn.getConnection().prepareStatement(SQL_INSERT);
-            ps.setString(1, g.getNombreRol());
+            ps.setInt(1, g.getCodUsuario());
+            ps.setInt(2, g.getCodParte());
             if (ps.executeUpdate() > 0) {
                 return true;
             }
@@ -67,11 +69,13 @@ public class RolData implements DataAccess<Rol> {
     }
 
     @Override
-    public boolean update(Rol c) {
+    public boolean update(Inventario c) {
         try {
             ps = (PreparedStatement) conn.getConnection().prepareStatement(SQL_UPDATE);
-            ps.setString(1, c.getNombreRol());
-            ps.setInt(2, c.getCodRol());
+            ps.setInt(1, c.getCodUsuario());
+            ps.setInt(2, c.getCodParte());
+            ps.setInt(3, c.getCodUsuario());
+            ps.setInt(4, c.getCodParte());
             if (ps.executeUpdate() > 0) {
                 return true;
             }
@@ -87,8 +91,8 @@ public class RolData implements DataAccess<Rol> {
     }
 
     @Override
-    public Rol read(Object key) {
-        Rol res = null;
+    public Inventario read(Object key) {
+        Inventario res = null;
         ResultSet rs;
         try{
             ps = (PreparedStatement) conn.getConnection().prepareStatement(SQL_READ);
@@ -97,7 +101,7 @@ public class RolData implements DataAccess<Rol> {
             rs = ps.executeQuery();
             
             while (rs.next()){
-                res = new Rol(rs.getInt(1), rs.getString(2));
+                res = new Inventario(rs.getInt(1), rs.getInt(2));
             }
             rs.close();
         } catch (SQLException ex) {
@@ -110,8 +114,8 @@ public class RolData implements DataAccess<Rol> {
     }
 
     @Override
-    public ArrayList<Rol> readAll() {
-        ArrayList<Rol> all = new ArrayList();
+    public ArrayList<Inventario> readAll() {
+        ArrayList<Inventario> all = new ArrayList();
         Statement s;
         ResultSet rs;
         try{
@@ -120,7 +124,7 @@ public class RolData implements DataAccess<Rol> {
             rs = ps.executeQuery(SQL_READALL);
             
             while (rs.next()){
-                all.add(new Rol(rs.getInt(1), rs.getString(2)));
+                all.add(new Inventario(rs.getInt(1), rs.getInt(2)));
             }
             rs.close();
         } catch (SQLException ex) {

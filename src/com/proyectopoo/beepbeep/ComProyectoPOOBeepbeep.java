@@ -23,9 +23,9 @@ public class ComProyectoPOOBeepbeep {
     public static void main(String[] args) {
         // TODO code application logic here
         RolData rd = new RolData();
-        Rol r = new Rol(1, "Administrador");
+        Rol r = rd.read(1);
         
-        System.out.println(""+rd.insert(r));        
+        System.out.println(r.getCodRol() + " " + r.getNombreRol());        
         
         
         
