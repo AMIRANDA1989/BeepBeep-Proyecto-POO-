@@ -7,7 +7,6 @@ package com.proyectopoo.beepbeep.data;
 
 import com.mysql.jdbc.PreparedStatement;
 import com.proyectopoo.beepbeep.classes.Parte;
-import com.proyectopoo.beepbeep.classes.Rol;
 import com.proyectopoo.beepbeep.engine.UserInteractions;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -34,16 +33,18 @@ public class ParteData implements DataAccess<Parte> {
     @Override
     public boolean insert(Parte g) {
         try {
+            conn = ConnectionBeep.initConnection();
             ps = (PreparedStatement) conn.getConnection().prepareStatement(SQL_INSERT);
             ps.setString(1, g.getNombre());
             ps.setString(2, g.getDescripcion());
             ps.setInt(3, g.getPrecio());
             ps.setInt(4, g.getCategoria());
+            
             if (ps.executeUpdate() > 0) {
                 return true;
             }
-        } catch (Exception ex) {
-            ui.showMessage(ui.ERROR_MESSAGE, "No se pudo realizar el insert " + SQL_INSERT);
+        } catch (SQLException ex) {
+            ui.showMessage(ui.ERROR_MESSAGE,  "No se pudo realizar el insert " + SQL_INSERT + ex.getMessage());
             return false;
         } finally {
             conn.closeConnection();
