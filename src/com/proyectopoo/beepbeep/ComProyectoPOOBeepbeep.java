@@ -9,6 +9,7 @@ import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
 import com.proyectopoo.beepbeep.classes.Parte;
 import com.proyectopoo.beepbeep.classes.Rol;
+import com.proyectopoo.beepbeep.classes.Usuario;
 import com.proyectopoo.beepbeep.data.ConnectionBeep;
 import com.proyectopoo.beepbeep.data.ParteData;
 import com.proyectopoo.beepbeep.data.RolData;
@@ -32,7 +33,7 @@ public class ComProyectoPOOBeepbeep {
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new GameScreen().setVisible(true);
+                new GameScreen(new Usuario(1, "Tester", "Testpwd", 1, 1, 1, 1, 30, 4, 1, 1)).setVisible(true);
             }
             
         });
