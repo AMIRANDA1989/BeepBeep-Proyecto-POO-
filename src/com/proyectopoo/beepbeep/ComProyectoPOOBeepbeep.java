@@ -14,6 +14,10 @@ import com.proyectopoo.beepbeep.data.ConnectionBeep;
 import com.proyectopoo.beepbeep.data.ParteData;
 import com.proyectopoo.beepbeep.data.RolData;
 import com.proyectopoo.beepbeep.gui.GameScreen;
+import com.proyectopoo.beepbeep.gui.ItemScreen;
+import com.proyectopoo.beepbeep.gui.MainMenuScreen;
+import com.proyectopoo.beepbeep.gui.StoreScreen;
+import com.proyectopoo.beepbeep.gui.TopScreen;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.JFrame;
@@ -33,7 +37,7 @@ public class ComProyectoPOOBeepbeep {
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new GameScreen(new Usuario(1, "Tester", "Testpwd", 1, 1, 1, 1, 30, 4, 1, 1)).setVisible(true);
+                new TopScreen(new Usuario(1, "Tester", "Testpwd", 1, 1, 1, 1, 30, 4, 100, 200)).setVisible(true);
             }
             
         });
