@@ -24,8 +24,8 @@ import java.util.logging.Logger;
  */
 public class UsuarioData implements DataAccess<Usuario> {
 
-    private static final String SQL_INSERT = "INSERT INTO USUARIO(username, password, codrol, codmotor, codllantas, codaccesorio, maxvelocidad, aceleracion, dinero, puntos) VALUES (?,?,?,?,?,?,?,?,?,?)";
-    private static final String SQL_UPDATE = "UPDATE USUARIO SET username = ?, password = ?, codrol = ?, codmotor = ?, codllantas = ?, codaccesorio = ?, maxvelocidad = ?, aceleracion = ?, dinero = ?, puntos = ? WHERE codusuario = ?";
+    private static final String SQL_INSERT = "INSERT INTO USUARIO(username, password, codrol, codmotor, codllantas, codaccesorio, maxvelocidad, maniobrabilidad, aceleracion, dinero, puntos) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+    private static final String SQL_UPDATE = "UPDATE USUARIO SET username = ?, password = ?, codrol = ?, codmotor = ?, codllantas = ?, codaccesorio = ?, maxvelocidad = ?, maniobrabilidad = ?, aceleracion = ?, dinero = ?, puntos = ? WHERE codusuario = ?";
     private static final String SQL_DELETE = "DELETE FROM USUARIO WHERE codusuario = ?";
     private static final String SQL_READ = "SELECT * FROM Usuario WHERE codusuario = ?";
     private static final String SQL_READALL = "SELECT * FROM usuario";
@@ -44,9 +44,10 @@ public class UsuarioData implements DataAccess<Usuario> {
             ps.setInt(5, g.getCodllantas());
             ps.setInt(6, g.getCodaccesorio());
             ps.setInt(7, g.getMaxvelocidad());
-            ps.setInt(8, g.getAceleracion());
-            ps.setInt(9, g.getDinero());
-            ps.setInt(10, g.getPuntos());
+            ps.setInt(8, g.getManiobrabilidad());
+            ps.setInt(9, g.getAceleracion());
+            ps.setInt(10, g.getDinero());
+            ps.setInt(11, g.getPuntos());
             if (ps.executeUpdate() > 0) {
                 return true;
             }
@@ -89,10 +90,11 @@ public class UsuarioData implements DataAccess<Usuario> {
             ps.setInt(5, c.getCodllantas());
             ps.setInt(6, c.getCodaccesorio());
             ps.setInt(7, c.getMaxvelocidad());
-            ps.setInt(8, c.getAceleracion());
-            ps.setInt(9, c.getDinero());
-            ps.setInt(10, c.getPuntos());
-            ps.setInt(11, c.getCodUsuario());
+            ps.setInt(8, c.getManiobrabilidad());
+            ps.setInt(9, c.getAceleracion());
+            ps.setInt(10, c.getDinero());
+            ps.setInt(11, c.getPuntos());
+            ps.setInt(12, c.getCodUsuario());
             if (ps.executeUpdate() > 0) {
                 return true;
             }
@@ -118,7 +120,7 @@ public class UsuarioData implements DataAccess<Usuario> {
             rs = ps.executeQuery();
             
             while (rs.next()){
-                res = new Usuario(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getInt(4), rs.getInt(5), rs.getInt(6), rs.getInt(7), rs.getInt(8), rs.getInt(9), rs.getInt(10), rs.getInt(11));
+                res = new Usuario(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getInt(4), rs.getInt(5), rs.getInt(6), rs.getInt(7), rs.getInt(8), rs.getInt(9), rs.getInt(10), rs.getInt(11), rs.getInt(12));
             }
             rs.close();
         } catch (SQLException ex) {
@@ -141,7 +143,7 @@ public class UsuarioData implements DataAccess<Usuario> {
             rs = ps.executeQuery(SQL_READALL);
             
             while (rs.next()){
-                all.add(new Usuario(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getInt(4), rs.getInt(5), rs.getInt(6), rs.getInt(7), rs.getInt(8), rs.getInt(9), rs.getInt(10), rs.getInt(11)));
+                all.add(new Usuario(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getInt(4), rs.getInt(5), rs.getInt(6), rs.getInt(7), rs.getInt(8), rs.getInt(9), rs.getInt(10), rs.getInt(11), rs.getInt(12)));
             }
             rs.close();
         } catch (SQLException ex) {

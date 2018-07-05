@@ -13,6 +13,8 @@ import com.proyectopoo.beepbeep.classes.Usuario;
 import com.proyectopoo.beepbeep.data.ConnectionBeep;
 import com.proyectopoo.beepbeep.data.ParteData;
 import com.proyectopoo.beepbeep.data.RolData;
+import com.proyectopoo.beepbeep.data.UsuarioData;
+import com.proyectopoo.beepbeep.engine.UserInteractions;
 import com.proyectopoo.beepbeep.gui.GameScreen;
 import com.proyectopoo.beepbeep.gui.ItemScreen;
 import com.proyectopoo.beepbeep.gui.MainMenuScreen;
@@ -33,11 +35,14 @@ public class ComProyectoPOOBeepbeep {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        UserInteractions userInteractions = new UserInteractions();
+        UsuarioData ud = new UsuarioData();
+        Usuario user = ud.read(1);
         // TODO code application logic here
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new TopScreen(new Usuario(1, "Tester", "Testpwd", 1, 1, 1, 1, 30, 4, 100, 200)).setVisible(true);
+                new StoreScreen(user).setVisible(true);
             }
             
         });

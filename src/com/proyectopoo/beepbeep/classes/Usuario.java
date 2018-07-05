@@ -19,10 +19,11 @@ public class Usuario {
     private int codaccesorio;
     private int maxvelocidad;
     private int aceleracion;
+    private int maniobrabilidad;
     private int dinero;
     private int puntos;
 
-    public Usuario(int codUsuario, String username, String password, int codrol, int codmotor, int codllantas, int codaccesorio, int maxvelocidad, int aceleracion, int dinero, int puntos) {
+    public Usuario(int codUsuario, String username, String password, int codrol, int codmotor, int codllantas, int codaccesorio, int maxvelocidad, int aceleracion, int maniobrabilidad, int dinero, int puntos) {
         this.codUsuario = codUsuario;
         this.username = username;
         this.password = password;
@@ -32,9 +33,12 @@ public class Usuario {
         this.codaccesorio = codaccesorio;
         this.maxvelocidad = maxvelocidad;
         this.aceleracion = aceleracion;
+        this.maniobrabilidad = maniobrabilidad;
         this.dinero = dinero;
         this.puntos = puntos;
     }
+
+    
 
     public int getCodUsuario() {
         return codUsuario;
@@ -123,6 +127,15 @@ public class Usuario {
     public void setPuntos(int puntos) {
         this.puntos = puntos;
     }
+
+    public int getManiobrabilidad() {
+        return maniobrabilidad;
+    }
+
+    public void setManiobrabilidad(int maniobrabilidad) {
+        this.maniobrabilidad = maniobrabilidad;
+    }
+    
     
     
 }

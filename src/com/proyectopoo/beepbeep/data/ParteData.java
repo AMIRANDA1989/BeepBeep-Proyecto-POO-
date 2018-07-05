@@ -21,11 +21,13 @@ import java.util.logging.Logger;
  */
 public class ParteData implements DataAccess<Parte> {
 
-    private static final String SQL_INSERT = "INSERT INTO PARTE(nombre, descripcion, precio, categoria) VALUES (?,?,?,?)";
-    private static final String SQL_UPDATE = "UPDATE PARTE SET nombre = ?, descripcion = ?, precio = ?, categoria = ? WHERE codParte = ?";
+    private static final String SQL_INSERT = "INSERT INTO PARTE(nombre, descripcion, precio, categoria, velocModifier, accelModifier, manModifier) VALUES (?,?,?,?, ?, ?, ?)";
+    private static final String SQL_UPDATE = "UPDATE PARTE SET nombre = ?, descripcion = ?, precio = ?, categoria = ?, velocModifier = ?, accelModifier = ?, manModifier = ? WHERE codParte = ?";
     private static final String SQL_DELETE = "DELETE FROM PARTE WHERE codParte = ?";
     private static final String SQL_READ = "SELECT * FROM PARTE WHERE codParte = ?";
     private static final String SQL_READALL = "SELECT * FROM PARTE";
+    private static final String SQL_BUY_PART = "INSERT INTO INVENTARIO(CODUSUARIO, CODPARTE) VALUES(?,?)";
+    
     PreparedStatement ps;
     ConnectionBeep conn = ConnectionBeep.initConnection();
     UserInteractions ui;
@@ -39,6 +41,9 @@ public class ParteData implements DataAccess<Parte> {
             ps.setString(2, g.getDescripcion());
             ps.setInt(3, g.getPrecio());
             ps.setInt(4, g.getCategoria());
+            ps.setInt(5, g.getVelocModifier());
+            ps.setInt(6, g.getAccelModifier());
+            ps.setInt(7, g.getManModifier());
             
             if (ps.executeUpdate() > 0) {
                 return true;
@@ -79,7 +84,10 @@ public class ParteData implements DataAccess<Parte> {
             ps.setString(2, c.getDescripcion());
             ps.setInt(3, c.getPrecio());
             ps.setInt(4, c.getCategoria());
-            ps.setInt(5, c.getCodParte());
+            ps.setInt(5, c.getVelocModifier());
+            ps.setInt(6, c.getAccelModifier());
+            ps.setInt(7, c.getManModifier());
+            ps.setInt(8, c.getCodParte());
             if (ps.executeUpdate() > 0) {
                 return true;
             }
@@ -105,7 +113,7 @@ public class ParteData implements DataAccess<Parte> {
             rs = ps.executeQuery();
             
             while (rs.next()){
-                res = new Parte(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getInt(4), rs.getInt(5));
+                res = new Parte(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getInt(4), rs.getInt(5), rs.getInt(6), rs.getInt(7), rs.getInt(8));
             }
             rs.close();
         } catch (SQLException ex) {
@@ -125,11 +133,12 @@ public class ParteData implements DataAccess<Parte> {
         try{
             s = conn.getConnection().prepareStatement(SQL_READALL);
             
-            rs = ps.executeQuery(SQL_READALL);
-            
+            rs = s.executeQuery(SQL_READALL);
+
             while (rs.next()){
-                all.add(new Parte(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getInt(4), rs.getInt(5)));
+                all.add(new Parte(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getInt(4), rs.getInt(5), rs.getInt(6), rs.getInt(7), rs.getInt(8)));
             }
+            
             rs.close();
         } catch (SQLException ex) {
             ui.showMessage(ui.ERROR_MESSAGE, "No se pudo realizar el query: " + SQL_READ);
@@ -138,6 +147,29 @@ public class ParteData implements DataAccess<Parte> {
         return all;
     }
 
-
+    /*METODOS PERSONALIZADOS **/
+    
+    public boolean buyPart(int codUser, int codPart){
+        conn = ConnectionBeep.initConnection();
+        try {
+            ps = (PreparedStatement) conn.getConnection().prepareStatement(SQL_BUY_PART);
+            ps.setInt(1, codUser);
+            ps.setInt(2, codPart);
+            System.out.println("llegue " + codUser + " - " + codPart);
+            if (ps.executeUpdate() > 0) {
+                return true;
+            }
+        } catch (SQLException ex) {
+            ui.showMessage(ui.ERROR_MESSAGE, "No se pudo realizar el query: " + SQL_BUY_PART);
+            return false;
+        } catch (NullPointerException ex){
+            System.out.println(ex.getMessage());
+            return false;
+        }finally{
+            conn.closeConnection();
+        }
+        
+        return false;
+    }
 
 }

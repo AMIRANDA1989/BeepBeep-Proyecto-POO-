@@ -15,14 +15,24 @@ public class Parte {
     private String descripcion;
     private int precio;
     private int categoria;
+    private int velocModifier;
+    private int accelModifier;
+    private int manModifier;
+    private int posX;
+    private int poxY;
 
-    public Parte(int codParte, String nombre, String descripcion, int precio, int categoria) {
+    public Parte(int codParte, String nombre, String descripcion, int precio, int categoria, int velocModifier, int accelModifier, int manModifier) {
         this.codParte = codParte;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.precio = precio;
         this.categoria = categoria;
+        this.velocModifier = velocModifier;
+        this.accelModifier = accelModifier;
+        this.manModifier = manModifier;
     }
+
+    
 
     public int getCodParte() {
         return codParte;
@@ -62,6 +72,46 @@ public class Parte {
 
     public void setCategoria(int categoria) {
         this.categoria = categoria;
+    }
+
+    public int getVelocModifier() {
+        return velocModifier;
+    }
+
+    public void setVelocModifier(int velocModifier) {
+        this.velocModifier = velocModifier;
+    }
+
+    public int getAccelModifier() {
+        return accelModifier;
+    }
+
+    public void setAccelModifier(int accelModifier) {
+        this.accelModifier = accelModifier;
+    }
+
+    public int getManModifier() {
+        return manModifier;
+    }
+
+    public void setManModifier(int manModifier) {
+        this.manModifier = manModifier;
+    }
+
+    public int getPosX() {
+        return posX;
+    }
+
+    public void setPosX(int posX) {
+        this.posX = posX;
+    }
+
+    public int getPoxY() {
+        return poxY;
+    }
+
+    public void setPoxY(int poxY) {
+        this.poxY = poxY;
     }
     
     

@@ -5,6 +5,9 @@
  */
 package com.proyectopoo.beepbeep.engine;
 
+import com.proyectopoo.beepbeep.classes.Usuario;
+import com.proyectopoo.beepbeep.data.UsuarioData;
+
 /**
  *
  * @author allan
@@ -14,6 +17,9 @@ public class UserInteractions {
     public final int WARNING_MESSAGE = 2;
     public final int ERROR_MESSAGE = 3;
     public final int ALERT_MESSAGE = 4;
+    
+    private Usuario user;
+    private UsuarioData userDao;
     
     public void showMessage(int messageType, String message) {
         switch (messageType) {
@@ -37,5 +43,13 @@ public class UserInteractions {
                 System.out.println("");
                 System.out.println("!!ALERTA!! - " + message);
         }
+    }
+    
+    public boolean modUser(Usuario u){
+        return userDao.update(u);
+    }
+    
+    public Usuario getUserByKey(int key){
+        return userDao.read(key);
     }
 }
