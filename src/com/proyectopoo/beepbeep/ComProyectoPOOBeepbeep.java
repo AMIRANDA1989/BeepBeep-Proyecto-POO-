@@ -17,6 +17,7 @@ import com.proyectopoo.beepbeep.data.UsuarioData;
 import com.proyectopoo.beepbeep.engine.UserInteractions;
 import com.proyectopoo.beepbeep.gui.GameScreen;
 import com.proyectopoo.beepbeep.gui.ItemScreen;
+import com.proyectopoo.beepbeep.gui.LoginScreen;
 import com.proyectopoo.beepbeep.gui.MainMenuScreen;
 import com.proyectopoo.beepbeep.gui.StoreScreen;
 import com.proyectopoo.beepbeep.gui.TopScreen;
@@ -42,7 +43,8 @@ public class ComProyectoPOOBeepbeep {
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new ItemScreen(user).setVisible(true);
+                new LoginScreen().setVisible(true);
+                //new TopScreen(user).setVisible(true);
             }
             
         });

@@ -6,11 +6,14 @@
 package com.proyectopoo.beepbeep.gui;
 
 import com.proyectopoo.beepbeep.classes.Usuario;
+import com.proyectopoo.beepbeep.data.UsuarioData;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -28,6 +31,7 @@ public class MainMenuScreen extends JFrame implements ActionListener{
     private JLabel usernameLbl, moneyLbl, pointsLbl;
     
     private Usuario player;
+    private UsuarioData playerDAO;
     
     public MainMenuScreen(Usuario player){
         super("Bienvenido a Beep Beep!");
@@ -60,15 +64,30 @@ public class MainMenuScreen extends JFrame implements ActionListener{
     
         //Configurando boton de tienda
         tiendaBtn.setIcon(new ImageIcon(getClass().getResource("btn-Tienda.png")));
-        tiendaBtn.setBounds(237, 396, 297, 170); 
+        tiendaBtn.setBounds(237, 396, 297, 170);
+        tiendaBtn.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                sendToMenu(1);
+            }
+        });
         
         //configurando boton de taller
         tallerBtn.setIcon(new ImageIcon(getClass().getResource("btn-Taller.png")));
-        tallerBtn.setBounds(562, 396, 297, 170); 
+        tallerBtn.setBounds(562, 396, 297, 170);
+        tallerBtn.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                sendToMenu(2);
+            }
+        });
         
         //configurando boton de top
         topBtn.setIcon(new ImageIcon(getClass().getResource("btn-Salon.png")));
-        topBtn.setBounds(237, 575, 636, 146); 
+        topBtn.setBounds(237, 575, 636, 146);
+        topBtn.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                sendToMenu(3);
+            }
+        });
         
         //configurando texto de username
         usernameLbl.setBounds(312, 25, 300, 50);
@@ -106,6 +125,26 @@ public class MainMenuScreen extends JFrame implements ActionListener{
         //estableciendo tamaño de la pantalla
         setSize(1024, 768);
         
+    }
+    
+    private void sendToMenu(int menu){
+        switch(menu){
+            case 1: //tienda
+                this.setVisible(false);
+                new StoreScreen(player).setVisible(true);
+                break;
+                
+            case 2: //taller
+                this.setVisible(false);
+                new ItemScreen(player).setVisible(true);
+                break;
+                
+            case 3://top
+                this.setVisible(false);
+                new TopScreen(player).setVisible(true);
+                break;
+                
+        }
     }
     
     @Override

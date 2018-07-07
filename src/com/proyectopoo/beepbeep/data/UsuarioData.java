@@ -24,11 +24,15 @@ import java.util.logging.Logger;
  */
 public class UsuarioData implements DataAccess<Usuario> {
 
-    private static final String SQL_INSERT = "INSERT INTO USUARIO(username, password, codrol, codmotor, codllantas, codaccesorio, maxvelocidad, maniobrabilidad, aceleracion, dinero, puntos) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+    private static final String SQL_INSERT = "INSERT INTO USUARIO(username, password) VALUES (?,?)";
     private static final String SQL_UPDATE = "UPDATE USUARIO SET username = ?, password = ?, codrol = ?, codmotor = ?, codllantas = ?, codaccesorio = ?, maxvelocidad = ?, maniobrabilidad = ?, aceleracion = ?, dinero = ?, puntos = ? WHERE codusuario = ?";
     private static final String SQL_DELETE = "DELETE FROM USUARIO WHERE codusuario = ?";
     private static final String SQL_READ = "SELECT * FROM Usuario WHERE codusuario = ?";
     private static final String SQL_READALL = "SELECT * FROM usuario";
+    private static final String SQL_TOP10 = "select * from usuario a order by puntos desc LIMIT 10 ";
+    private static final String SQL_LOGIN = "SELECT * FROM usuario where username = ? and password = ?";
+    private static final String SQL_READ_USERNAME = "SELECT * FROM Usuario WHERE username = ?";
+    
     PreparedStatement ps;
     ConnectionBeep conn = ConnectionBeep.initConnection();
     UserInteractions ui;
@@ -39,15 +43,6 @@ public class UsuarioData implements DataAccess<Usuario> {
             ps = (PreparedStatement) conn.getConnection().prepareStatement(SQL_INSERT);
             ps.setString(1, g.getUsername());
             ps.setString(2, g.getPassword());
-            ps.setInt(3, g.getCodrol());
-            ps.setInt(4, g.getCodmotor());
-            ps.setInt(5, g.getCodllantas());
-            ps.setInt(6, g.getCodaccesorio());
-            ps.setInt(7, g.getMaxvelocidad());
-            ps.setInt(8, g.getManiobrabilidad());
-            ps.setInt(9, g.getAceleracion());
-            ps.setInt(10, g.getDinero());
-            ps.setInt(11, g.getPuntos());
             if (ps.executeUpdate() > 0) {
                 return true;
             }
@@ -140,7 +135,7 @@ public class UsuarioData implements DataAccess<Usuario> {
         try{
             s = conn.getConnection().prepareStatement(SQL_READALL);
             
-            rs = ps.executeQuery(SQL_READALL);
+            rs = s.executeQuery(SQL_READALL);
             
             while (rs.next()){
                 all.add(new Usuario(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getInt(4), rs.getInt(5), rs.getInt(6), rs.getInt(7), rs.getInt(8), rs.getInt(9), rs.getInt(10), rs.getInt(11), rs.getInt(12)));
@@ -148,11 +143,80 @@ public class UsuarioData implements DataAccess<Usuario> {
             rs.close();
         } catch (SQLException ex) {
             ui.showMessage(ui.ERROR_MESSAGE, "No se pudo realizar el query: " + SQL_READ);
+        }finally{
+            conn.closeConnection();
+        }
+        
+        return all;
+    }
+    
+    
+    public ArrayList<Usuario> readTop10() {
+        ArrayList<Usuario> all = new ArrayList();
+        Statement s;
+        ResultSet rs;
+        try{
+            s = conn.getConnection().prepareStatement(SQL_TOP10);
+            
+            rs = s.executeQuery(SQL_TOP10);
+            
+            while (rs.next()){
+                all.add(new Usuario(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getInt(4), rs.getInt(5), rs.getInt(6), rs.getInt(7), rs.getInt(8), rs.getInt(9), rs.getInt(10), rs.getInt(11), rs.getInt(12)));
+            }
+            rs.close();
+        } catch (SQLException ex) {
+            ui.showMessage(ui.ERROR_MESSAGE, "No se pudo realizar el query: " + SQL_TOP10);
+        } finally{
+            conn.closeConnection();
         }
         
         return all;
     }
 
+    public Usuario loginUser(String username, String password){
+        Usuario res = null;
+        ResultSet rs;
+        try{
+                        System.out.println("llegue");
 
-
+            ps = (PreparedStatement) conn.getConnection().prepareStatement(SQL_LOGIN);
+            ps.setString(1, username);
+            ps.setString(2, password);
+            System.out.println("llegue");
+            rs = ps.executeQuery();
+            
+            while (rs.next()){
+                res = new Usuario(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getInt(4), rs.getInt(5), rs.getInt(6), rs.getInt(7), rs.getInt(8), rs.getInt(9), rs.getInt(10), rs.getInt(11), rs.getInt(12));
+            }
+            rs.close();
+        } catch (SQLException ex) {
+            ui.showMessage(ui.ERROR_MESSAGE, "No se pudo realizar el query: " + SQL_READ);
+        }finally{
+            conn.closeConnection();
+        }
+        
+        return res;
+    }
+    
+    public Usuario readByUsername(Object key) {
+        Usuario res = null;
+        ResultSet rs;
+        try{
+            ps = (PreparedStatement) conn.getConnection().prepareStatement(SQL_READ_USERNAME);
+            ps.setString(1, key.toString());
+            
+            rs = ps.executeQuery();
+            
+            while (rs.next()){
+                res = new Usuario(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getInt(4), rs.getInt(5), rs.getInt(6), rs.getInt(7), rs.getInt(8), rs.getInt(9), rs.getInt(10), rs.getInt(11), rs.getInt(12));
+            }
+            rs.close();
+        } catch (SQLException ex) {
+            ui.showMessage(ui.ERROR_MESSAGE, "No se pudo realizar el query: " + SQL_READ_USERNAME);
+        }finally{
+            conn.closeConnection();
+        }
+        
+        return res;
+    }
 }

@@ -383,6 +383,8 @@ public class ItemScreen extends JFrame implements ActionListener {
 
         if (n == 0) {
             this.setVisible(false);
+            userDAO = new UsuarioData();
+            new MainMenuScreen(userDAO.read(player.getCodUsuario())).setVisible(true);
         }
 
         

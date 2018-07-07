@@ -65,6 +65,10 @@ public class StoreScreen extends JFrame implements ActionListener {
         initStoreScreen();
     }
 
+    StoreScreen() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     private void initStoreScreen() {
         buyBtn = new JLabel();
         backBtn = new JLabel();
@@ -276,6 +280,8 @@ public class StoreScreen extends JFrame implements ActionListener {
 
         if (n == 0) {
             this.setVisible(false);
+            userDAO = new UsuarioData();
+            new MainMenuScreen(userDAO.read(player.getCodUsuario())).setVisible(true);
         }
 
         

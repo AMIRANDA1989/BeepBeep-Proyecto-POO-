@@ -22,6 +22,10 @@ public class Usuario {
     private int maniobrabilidad;
     private int dinero;
     private int puntos;
+    
+    public Usuario(){
+        
+    }
 
     public Usuario(int codUsuario, String username, String password, int codrol, int codmotor, int codllantas, int codaccesorio, int maxvelocidad, int aceleracion, int maniobrabilidad, int dinero, int puntos) {
         this.codUsuario = codUsuario;
