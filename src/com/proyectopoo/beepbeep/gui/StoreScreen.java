@@ -231,7 +231,9 @@ public class StoreScreen extends JFrame implements ActionListener {
     }
 
     public void buyItem() {
-
+        boolean userChange;
+        boolean itemChange;
+        
         try {
             Object[] options = {"Si", "No", "Cancelar"};
 
@@ -240,8 +242,14 @@ public class StoreScreen extends JFrame implements ActionListener {
             if (n == 0) {
                 if (this.player.getDinero() - selectedPart.getPrecio() >= 0) {
                     this.player.setDinero(this.player.getDinero() - selectedPart.getPrecio());
-
-                    if (/*userDAO.update(player) &&*/itemDAO.buyPart(player.getCodUsuario(), selectedPart.getCodParte())) {
+                    
+                    userDAO = new UsuarioData();
+                    userChange = userDAO.update(player);
+                    
+                    itemDAO = new ParteData();
+                    itemChange = itemDAO.buyPart(player.getCodUsuario(), selectedPart.getCodParte());
+                    
+                    if (userChange && itemChange) {
                         moneyLbl.setText("" + player.getDinero());
                         pointsLbl.setText("" + player.getPuntos());
                         JOptionPane.showMessageDialog(this, "Compra realizada con exito, ve a probar tu nuevo equipo.", "Compra exitosa", JOptionPane.INFORMATION_MESSAGE);

@@ -42,7 +42,7 @@ public class ComProyectoPOOBeepbeep {
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new StoreScreen(user).setVisible(true);
+                new ItemScreen(user).setVisible(true);
             }
             
         });

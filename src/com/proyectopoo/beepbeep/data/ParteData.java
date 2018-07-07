@@ -27,11 +27,15 @@ public class ParteData implements DataAccess<Parte> {
     private static final String SQL_READ = "SELECT * FROM PARTE WHERE codParte = ?";
     private static final String SQL_READALL = "SELECT * FROM PARTE";
     private static final String SQL_BUY_PART = "INSERT INTO INVENTARIO(CODUSUARIO, CODPARTE) VALUES(?,?)";
-    
+    private static final String SQL_GET_USER_PARTS = "SELECT a.* FROM parte a INNER JOIN inventario b ON a.codparte = b.codParte where b.codUsuario = ?";
+    private static final String SQL_GET_USER_ENGINE = "SELECT a.* FROM parte a INNER JOIN usuario b ON a.codparte = b.codmotor where b.codUsuario = ?";
+    private static final String SQL_GET_USER_TIRES = "SELECT a.* FROM parte a INNER JOIN usuario b ON a.codparte = b.codllantas where b.codUsuario = ?";
+    private static final String SQL_GET_USER_ACCESORIES = "SELECT a.* FROM parte a INNER JOIN usuario b ON a.codparte = b.codaccesorio where b.codUsuario = ?";
+
     PreparedStatement ps;
     ConnectionBeep conn = ConnectionBeep.initConnection();
     UserInteractions ui;
-    
+
     @Override
     public boolean insert(Parte g) {
         try {
@@ -44,12 +48,12 @@ public class ParteData implements DataAccess<Parte> {
             ps.setInt(5, g.getVelocModifier());
             ps.setInt(6, g.getAccelModifier());
             ps.setInt(7, g.getManModifier());
-            
+
             if (ps.executeUpdate() > 0) {
                 return true;
             }
         } catch (SQLException ex) {
-            ui.showMessage(ui.ERROR_MESSAGE,  "No se pudo realizar el insert " + SQL_INSERT + ex.getMessage());
+            ui.showMessage(ui.ERROR_MESSAGE, "No se pudo realizar el insert " + SQL_INSERT + ex.getMessage());
             return false;
         } finally {
             conn.closeConnection();
@@ -72,7 +76,7 @@ public class ParteData implements DataAccess<Parte> {
         } finally {
             conn.closeConnection();
         }
-        
+
         return false;
     }
 
@@ -91,14 +95,14 @@ public class ParteData implements DataAccess<Parte> {
             if (ps.executeUpdate() > 0) {
                 return true;
             }
-            
+
         } catch (Exception ex) {
             ui.showMessage(ui.ERROR_MESSAGE, "No se pudo realizar el query: " + SQL_UPDATE);
             return false;
         } finally {
             conn.closeConnection();
         }
-        
+
         return false;
     }
 
@@ -106,22 +110,28 @@ public class ParteData implements DataAccess<Parte> {
     public Parte read(Object key) {
         Parte res = null;
         ResultSet rs;
-        try{
+
+        if (conn.getConnection() == null) {
+
+            conn = ConnectionBeep.initConnection();
+
+        }
+        try {
             ps = (PreparedStatement) conn.getConnection().prepareStatement(SQL_READ);
             ps.setString(1, key.toString());
-            
+
             rs = ps.executeQuery();
-            
-            while (rs.next()){
+
+            while (rs.next()) {
                 res = new Parte(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getInt(4), rs.getInt(5), rs.getInt(6), rs.getInt(7), rs.getInt(8));
             }
             rs.close();
         } catch (SQLException ex) {
             ui.showMessage(ui.ERROR_MESSAGE, "No se pudo realizar el query: " + SQL_READ);
-        }finally{
+        } finally {
             conn.closeConnection();
         }
-        
+
         return res;
     }
 
@@ -130,26 +140,25 @@ public class ParteData implements DataAccess<Parte> {
         ArrayList<Parte> all = new ArrayList();
         Statement s;
         ResultSet rs;
-        try{
+        try {
             s = conn.getConnection().prepareStatement(SQL_READALL);
-            
+
             rs = s.executeQuery(SQL_READALL);
 
-            while (rs.next()){
+            while (rs.next()) {
                 all.add(new Parte(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getInt(4), rs.getInt(5), rs.getInt(6), rs.getInt(7), rs.getInt(8)));
             }
-            
+
             rs.close();
         } catch (SQLException ex) {
             ui.showMessage(ui.ERROR_MESSAGE, "No se pudo realizar el query: " + SQL_READ);
         }
-        
+
         return all;
     }
 
     /*METODOS PERSONALIZADOS **/
-    
-    public boolean buyPart(int codUser, int codPart){
+    public boolean buyPart(int codUser, int codPart) {
         conn = ConnectionBeep.initConnection();
         try {
             ps = (PreparedStatement) conn.getConnection().prepareStatement(SQL_BUY_PART);
@@ -162,14 +171,36 @@ public class ParteData implements DataAccess<Parte> {
         } catch (SQLException ex) {
             ui.showMessage(ui.ERROR_MESSAGE, "No se pudo realizar el query: " + SQL_BUY_PART);
             return false;
-        } catch (NullPointerException ex){
+        } catch (NullPointerException ex) {
             System.out.println(ex.getMessage());
             return false;
-        }finally{
+        } finally {
             conn.closeConnection();
         }
-        
+
         return false;
+    }
+
+    public ArrayList<Parte> getInventory(int key) {
+        ArrayList<Parte> inventory = new ArrayList();
+        ResultSet rs;
+        try {
+            ps = (PreparedStatement) conn.getConnection().prepareStatement(SQL_GET_USER_PARTS);
+            ps.setInt(1, key);
+
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                inventory.add(new Parte(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getInt(4), rs.getInt(5), rs.getInt(6), rs.getInt(7), rs.getInt(8)));
+            }
+            rs.close();
+        } catch (SQLException ex) {
+            ui.showMessage(ui.ERROR_MESSAGE, "No se pudo realizar el query: " + SQL_GET_USER_PARTS);
+        } finally {
+            conn.closeConnection();
+        }
+
+        return inventory;
     }
 
 }
