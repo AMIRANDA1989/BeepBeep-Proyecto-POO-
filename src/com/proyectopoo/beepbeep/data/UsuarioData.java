@@ -219,4 +219,5 @@ public class UsuarioData implements DataAccess<Usuario> {
         
         return res;
     }
+   
 }

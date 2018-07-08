@@ -5,7 +5,12 @@
  */
 package com.proyectopoo.beepbeep.gui;
 
+import com.proyectopoo.beepbeep.classes.Carrera;
+import com.proyectopoo.beepbeep.classes.Parte;
 import com.proyectopoo.beepbeep.classes.Usuario;
+import com.proyectopoo.beepbeep.data.CarreraData;
+import com.proyectopoo.beepbeep.data.ParteData;
+import com.proyectopoo.beepbeep.data.UsuarioData;
 import java.awt.Container;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -17,6 +22,9 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -38,6 +46,13 @@ public class GameScreen extends JFrame implements ActionListener, KeyListener {
     private int FLINE_POS_Y = -5052;
     private final Set<Integer> pressed = new HashSet<Integer>();
     private Usuario player;
+    private Carrera race;
+
+    private UsuarioData playerDAO;
+    private CarreraData raceDAO;
+    private Parte eqEngine;
+    private Parte eqTires;
+    private Parte eqAccesory;
 
     //Variables de jugabilidad
     private int START_COUNTDOWN = 5;
@@ -95,26 +110,31 @@ public class GameScreen extends JFrame implements ActionListener, KeyListener {
 
                     cautionSign.setVisible(VISIBLE_CAUTION_SIGN);
 
-                    if (CAR_SPEED <= player.getMaxvelocidad()) {
+                    if (CAR_SPEED <= 50 + player.getMaxvelocidad()) {
                         if (ACCELERATING) {
-                            CAR_SPEED += player.getAceleracion();
+                            CAR_SPEED += (5 + player.getAceleracion());
                         }
                     }
                 } else {
                     START_COUNTDOWN--;
                 }
             } else {
-                finishMessage.setVisible(true);
+
                 ACTIVATED_KEYBOARD = false;
+
+                finishRace();
+
             }
         }
     });
 
-    public GameScreen(Usuario player) {
+    public GameScreen(Usuario player, Carrera race) {
         super("Beep Beep");
         this.player = player;
         this.addKeyListener(this);
         this.setFocusTraversalKeysEnabled(false); //sirve para desactivar llaves como tab y otras
+        this.race = race;
+        setupPlayerGear();
         initGameScreen();
 
     }
@@ -149,7 +169,7 @@ public class GameScreen extends JFrame implements ActionListener, KeyListener {
                     this.obstacles.add(new JLabel());
                     this.obstacles.get(obsIndex).setIcon(new ImageIcon(getClass().getResource("rubble.png")));
                     obstacleLine = ThreadLocalRandom.current().nextInt(1, 3 + 1);
-                    System.out.println("Colocando Obstaculo");
+                    //System.out.println("Colocando Obstaculo");
                     switch (obstacleLine) {
                         case 1:
                             this.obstacles.get(obsIndex).setBounds(322, OBS_BLOCK_INIT_Y, 120, 100);
@@ -171,8 +191,6 @@ public class GameScreen extends JFrame implements ActionListener, KeyListener {
             OBS_BLOCK_INIT_Y += 100; //pasando al siguiente bloque
             this.OBS_QTY--;
         }
-
-
 
         //configurando fondo de pantalla
         this.background.setIcon(new ImageIcon(getClass().getResource("grassbackground.png")));
@@ -205,7 +223,7 @@ public class GameScreen extends JFrame implements ActionListener, KeyListener {
         //configurando mensaje de finalizacion
         this.finishMessage.setIcon(new ImageIcon(getClass().getResource("raceOver.png")));
         this.finishMessage.setBounds(151, 276, 705, 215);
-        this.finishMessage.setVisible(this.VISIBLE_FINISH_MSG);
+        this.finishMessage.setVisible(false);
 
         timeCounter.setBounds(20, 20, 300, 50); //Ingresando ubicacion inicial
         timeCounter.setText("0");
@@ -263,9 +281,10 @@ public class GameScreen extends JFrame implements ActionListener, KeyListener {
         int finishX2 = this.finishLine.getX() + 360;
         int finishY2 = this.finishLine.getY() + 180;
 
-        if (carX < finishX2 && carX2 > finishX && carY < finishY2 && carY2 > finishY) {
+        if (carX < finishX2 && carX2 > finishX && carY < finishY2) {
             //System.out.println("choque");
             this.FINISHED_RACE = true;
+            finishMessage.setVisible(true);
         } else {
             this.FINISHED_RACE = false;
         }
@@ -281,7 +300,7 @@ public class GameScreen extends JFrame implements ActionListener, KeyListener {
                     case KeyEvent.VK_LEFT:
                         //System.out.println("Left");
                         if (!(CAR_POS_X <= STREET_POS_X)) {
-                            CAR_POS_X -= 5;
+                            CAR_POS_X -= (5 + player.getManiobrabilidad());
                         }
 
                         carSprite.setBounds(CAR_POS_X, CAR_POS_Y, 60, 130);
@@ -289,9 +308,9 @@ public class GameScreen extends JFrame implements ActionListener, KeyListener {
                     case KeyEvent.VK_RIGHT:
                         //System.out.println("Right");
                         if (!(CAR_POS_X >= STREET_POS_X + 300)) {
-                            CAR_POS_X += 5;
+                            CAR_POS_X += (5 + player.getManiobrabilidad());
                         }
-                        
+
                         carSprite.setBounds(CAR_POS_X, CAR_POS_Y, 60, 130);
                         break;
                     case KeyEvent.VK_UP:
@@ -354,6 +373,91 @@ public class GameScreen extends JFrame implements ActionListener, KeyListener {
                 ACCELERATING = false;
                 this.CAR_SPEED = this.INIT_SPEED;
                 break;
+        }
+
+    }
+
+    public void closeWindow() {
+        this.setVisible(false);
+        playerDAO = new UsuarioData();
+        new MainMenuScreen(playerDAO.read(player.getCodUsuario())).setVisible(true);
+
+    }
+
+    public void setupPlayerGear() {
+        ParteData partDAO = new ParteData();
+        eqEngine = partDAO.read(player.getCodmotor());
+        partDAO = new ParteData();
+        eqTires = partDAO.read(player.getCodllantas());
+        partDAO = new ParteData();
+        eqAccesory = partDAO.read(player.getCodaccesorio());
+
+        player.setAceleracion(eqEngine.getAccelModifier() + eqTires.getAccelModifier() + eqAccesory.getAccelModifier());
+        player.setMaxvelocidad(eqEngine.getVelocModifier() + eqTires.getVelocModifier() + eqAccesory.getVelocModifier());
+        player.setManiobrabilidad(eqEngine.getManModifier() + eqEngine.getManModifier() + eqAccesory.getManModifier());
+        System.out.println("Aceleracion: " + player.getAceleracion());
+        System.out.println("Velocidad Maxima: " + player.getMaxvelocidad());
+        System.out.println("maniobrabilidad: " + player.getManiobrabilidad());
+    }
+
+    public void finishRace() {
+        finishMessage.setVisible(true);
+        this.startMessage.setIcon(new ImageIcon(getClass().getResource("start.png")));
+        startMessage.setVisible(true);
+
+        try {
+            TimeUnit.SECONDS.sleep(3);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(GameScreen.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        raceDAO = new CarreraData();
+        if (race.getCodJugador1() == player.getCodUsuario()) {
+            //Si el jugador es el jugador 1 entonces
+            race.setTiempoJugador1(elapsedTime);
+        } else {
+            race.setTiempoJugador2(elapsedTime);
+        }
+
+        raceDAO.update(race);
+        checkWinner();
+        closeWindow();
+
+        this.timer.stop();
+    }
+
+    public void checkWinner() {
+        int winnerNum = 0;
+        Usuario winner;
+
+        if (race.getTiempoJugador2() != 0) {
+            if (race.getTiempoJugador1() < race.getTiempoJugador2()) {
+                winnerNum = 1;
+                System.out.println("Gana 1");
+            }
+
+            if (race.getTiempoJugador2() < race.getTiempoJugador1()) {
+                winnerNum = 2;
+                System.out.println("Gana 2");
+            }
+
+            if (winnerNum == 1) {
+                playerDAO = new UsuarioData();
+                winner = playerDAO.read(race.getCodJugador1());
+                winner.setPuntos(winner.getPuntos() + 100);
+                winner.setDinero(winner.getDinero() + 100);
+                playerDAO = new UsuarioData();
+                playerDAO.update(winner);
+            }
+
+            if (winnerNum == 2) {
+                playerDAO = new UsuarioData();
+                winner = playerDAO.read(race.getCodJugador2());
+                winner.setPuntos(winner.getPuntos() + 100);
+                winner.setDinero(winner.getDinero() + 100);
+                playerDAO = new UsuarioData();
+                playerDAO.update(winner);
+            }
         }
 
     }
